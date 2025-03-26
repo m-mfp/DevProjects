@@ -1,6 +1,5 @@
-===========================
-Minesweep Game (Python/Tkinter)
-===========================
+===== Minesweep Game (Python/Tkinter)
+---
 
 Author: Marcela Martin
 Version: 1.0
