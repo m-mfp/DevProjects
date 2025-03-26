@@ -25,7 +25,6 @@ class Cell:
             bg = 'ivory'
         )
 
-        # Configure what happens when clicking the button
         btn.bind('<Button-1>', self.left_click_actions)
         btn.bind('<Button-3>', self.right_click_actions)
         self.cell_btn_object = btn
@@ -47,9 +46,6 @@ class Cell:
         if self.is_mine:
             self.show_mine()
         else:
-            if self.surrounding_mines_count == 0:
-                for cell_obj in self.surrounded_cells:
-                    cell_obj.show_cell()
             self.show_cell()
 
             if Cell.cell_count == settings.MINES_COUNT:
@@ -87,20 +83,24 @@ class Cell:
         return counter
 
     def show_cell(self):
-        # NEEDS TO BE FIXED - IF NEXT CELL IS ALSO ZERO IT SHOULD BE OPENED TOO, BUT IT IS JUST BEIGN SHOWN
         if not self.is_open:
             Cell.cell_count -= 1
             self.cell_btn_object.configure(
-                text=self.surrounding_mines_count, 
+                text=self.surrounding_mines_count if self.surrounding_mines_count > 0 else "zero", 
             )
             if Cell.cell_count_label_object:
-                Cell.cell_count_label_object.configure(text=f"{Cell.cell_count}")
+                Cell.cell_count_label_object.configure(text=f"{Cell.cell_count}")        
         
         self.cell_btn_object.configure(
             bg='ivory'
         )
 
         self.is_open = True
+
+        if self.surrounding_mines_count == 0:
+            for cell in self.surrounded_cells:
+                if not cell.is_open:
+                    cell.show_cell()
 
     def show_mine(self):
         self.cell_btn_object.configure(bg='red')
@@ -118,7 +118,7 @@ class Cell:
             self.is_mine_candidate = True
         else:
             self.cell_btn_object.configure(
-                bg='ivory'    # SystemButtonFace didn't work
+                bg='ivory'
             )
             self.is_mine_candidate = False
 
