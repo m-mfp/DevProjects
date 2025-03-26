@@ -1,4 +1,4 @@
-from tkinter import * # (Tk, Frame, Button, Label)
+from tkinter import Tk, Frame, Button, Label
 import settings, utils
 from cell import Cell
 
