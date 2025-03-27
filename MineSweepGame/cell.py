@@ -20,8 +20,6 @@ class Cell:
     def create_btn_object(self, location):
         btn = Button(
             location,
-            width = 12,
-            height = 4,
             bg = 'ivory'
         )
 
@@ -33,8 +31,6 @@ class Cell:
     def create_cell_count_label(location):
         lbl = Label(
             location,
-            bg = 'black',
-            fg = 'white',
             text = f"{Cell.cell_count}",
             width = 12,
             height = 4,
@@ -108,7 +104,7 @@ class Cell:
         if retry:
             self.restart_game()
         else:
-            pass#sys.exit()
+            sys.exit()
 
     def right_click_actions(self, event):
         if not self.is_mine_candidate:
@@ -123,7 +119,7 @@ class Cell:
             self.is_mine_candidate = False
 
     def restart_game(self):
-        pass#sys.exit()
+        pass
 
     @staticmethod
     def randomize_mines():
