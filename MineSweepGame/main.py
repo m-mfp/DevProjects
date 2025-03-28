@@ -6,7 +6,7 @@ from game import Game
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.configure(bg=settings.BG_COL)   
+        self.configure(bg=settings.GAME_BG)   
         self.geometry(f'{settings.WIDTH}x{settings.HEIGHT}')
         self.title("MineSweep Game")
 

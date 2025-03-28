@@ -1,4 +1,4 @@
-===== Minesweep Game (Python/Tkinter)
+===== Minesweep Game
 ---
 
 Author: Marcela Martin
@@ -10,6 +10,7 @@ Description:
 A classic Minesweeper game built using Python library.
 The game features a simple graphical interface and the classic
 mechanics of uncovering tiles while avoiding hidden mines.
+OOP practice using tkinter.
 
 Features:
 ---------
@@ -43,11 +44,10 @@ Files:
 
 Future Improvements (Optional):
 -------------------------------
-- Timer and high scores
-- Difficulty levels
+- Timer
+- Score keeper
 - Sound effects
 - Animations
-- Responsive grid layout
 
 Notes:
 ------

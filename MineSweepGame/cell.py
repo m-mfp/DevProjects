@@ -19,8 +19,8 @@ class Cell:
     def create_btn_object(self, location):
         btn = Button(
             location,
-            bg=settings.CELL_COL,
-            activebackground=settings.ACTIVE_CELL_COL
+            bg=settings.CELL_DEFAULT_BG,
+            activebackground=settings.CELL_HOVER_BG
         )
 
         btn.bind('<Button-1>', self.left_click_actions)
@@ -92,7 +92,7 @@ class Cell:
                 Cell.cell_count_label_object.configure(text=f"\nCells left:\n\n{Cell.cell_count}")        
         
         self.cell_btn_object.configure(
-            bg=settings.CELL_COL
+            bg=settings.CELL_DEFAULT_BG
         )
 
         self.is_open = True
@@ -103,7 +103,7 @@ class Cell:
                     cell.show_cell()
 
     def show_mine(self):
-        self.cell_btn_object.configure(bg='red')
+        self.cell_btn_object.configure(bg=settings.CELL_MINE_BG)
         retry = messagebox.askyesno("Game Over", "You clicked on a mine!\nDo you want to retry?")
         if retry:
             self.restart_game()
@@ -113,14 +113,14 @@ class Cell:
     def right_click_actions(self, event):
         if not self.is_mine_candidate:
             self.cell_btn_object.configure(
-                bg=settings.MARKED_CELL_COL,
-                activebackground=settings.MARKED_CELL_COL
+                bg=settings.CELL_FLAG_BG,
+                activebackground=settings.CELL_FLAG_BG
             )
             self.is_mine_candidate = True
         else:
             self.cell_btn_object.configure(
-                bg=settings.CELL_COL,
-                activebackground=settings.ACTIVE_CELL_COL
+                bg=settings.CELL_DEFAULT_BG,
+                activebackground=settings.CELL_HOVER_BG
             )
             self.is_mine_candidate = False
 
