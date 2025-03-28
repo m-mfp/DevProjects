@@ -29,6 +29,10 @@ class Cell:
 
     @staticmethod
     def create_cell_count_label(location):
+        try:
+            Cell.cell_count_label_object.destroy()
+        except: pass
+
         lbl = Label(
             location,
             text = f"{Cell.cell_count}",
@@ -82,7 +86,7 @@ class Cell:
         if not self.is_open:
             Cell.cell_count -= 1
             self.cell_btn_object.configure(
-                text=self.surrounding_mines_count if self.surrounding_mines_count > 0 else "zero", 
+                text=self.surrounding_mines_count 
             )
             if Cell.cell_count_label_object:
                 Cell.cell_count_label_object.configure(text=f"{Cell.cell_count}")        

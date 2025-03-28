@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import settings, utils
-from cell import Cell
+import settings
+from game import Game
 
 class App(tk.Tk):
     def __init__(self):
@@ -38,62 +38,8 @@ class App(tk.Tk):
         self.center_frame.grid_propagate(False)
 
 
-        self.start_menu()
-        
-
-    def start_menu(self):
-
-        # PLAY BUTTON UGLY BUT WORKING
-        self.playbutton = ttk.Button(
-            self.left_frame,
-            text='PLAY',
-            command=self.start_game,
-        )
-
-        # DIFFICULTY SETTINGS radio button
-        difficulties = (
-            ('EASY', 6),
-            ('MEDIUM', 8),
-            ('HARD', 10),
-            ('ABSURD', 12)
-        )
-        self.selected_difficulty = tk.StringVar(value=difficulties[0][1])
-        
-        label = ttk.Label(self.left_frame, text="CHOOSE DIFFICULTY:")
-        label.pack(padx=5, pady=5)
-        
-        for diff in difficulties:
-            self.difficulty = ttk.Radiobutton(
-                self.left_frame,
-                text=diff[0],
-                value=diff[1],
-                variable=self.selected_difficulty,
-            )
-            self.difficulty.pack(padx=5, pady=3)
-        self.playbutton.pack()
-
-
-
-        # ADD SOUND & MUTE button
-        # SIZE dropdown button
-
-
-    def start_game(self):
-        settings.GRID_SIZE = int(self.selected_difficulty.get())
-
-        for x in range(settings.GRID_SIZE):
-            for y in range(settings.GRID_SIZE):
-                c = Cell(x, y)
-                c.create_btn_object(self.center_frame)
-                c.cell_btn_object.grid(column=x, row=y, sticky='snew', padx=4, pady=4)
-                self.center_frame.grid_columnconfigure(x, weight=1)
-                self.center_frame.grid_rowconfigure(y, weight=1)
-
-        Cell.create_cell_count_label(self.left_frame)
-        Cell.cell_count_label_object.place(x=0, y=0)
-        Cell.randomize_mines()
-
-
+        game = Game(self.top_frame, self.left_frame, self.center_frame)
+        game.startmenu()
 
 
 
