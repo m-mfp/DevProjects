@@ -20,7 +20,7 @@ class Game:
         )
         self.selected_difficulty = tk.StringVar(value=self.difficulties[0][1])
 
-    def playbutton(self):
+    def create_play_button(self):
         self._playbutton = ttk.Button(
             self.left_frame,
             text='PLAY',
@@ -28,7 +28,7 @@ class Game:
         )
         self._playbutton.pack()
     
-    def difficultybutton(self):        
+    def create_difficulty_button(self):        
         for widget in self.left_frame.winfo_children():
             widget.destroy()
 
@@ -47,22 +47,28 @@ class Game:
     def startmenu(self):
         if self.first_game:
             self.first_game = False
-            self.difficultybutton()
-            self.playbutton()
+            self.create_difficulty_button()
+            self.create_play_button()
         else:
-            self.difficultybutton()
-            self.playbutton()
+            self.create_difficulty_button()
+            self.create_play_button()
             self._playbutton.configure(text='RESTART')
+            self.counter()
+
+    def counter(self):
+        Cell.create_cell_count_label(self.left_frame)
+        Cell.cell_count_label_object.pack(padx=5, pady=3)
+
 
     def start_game(self):
         for widget in self.center_frame.winfo_children():
             widget.destroy()
 
         Cell.all = []
-        Cell.cell_count = settings.CELL_COUNT
         settings.GRID_SIZE = int(self.selected_difficulty.get())
         settings.CELL_COUNT = settings.GRID_SIZE ** 2
         settings.MINES_COUNT = settings.CELL_COUNT // 4
+        Cell.cell_count = settings.CELL_COUNT
 
         for x in range(settings.GRID_SIZE):
             for y in range(settings.GRID_SIZE):
@@ -72,7 +78,6 @@ class Game:
                 self.center_frame.grid_columnconfigure(x, weight=1)
                 self.center_frame.grid_rowconfigure(y, weight=1)
 
-        #Cell.create_cell_count_label(self.left_frame)
-        #Cell.cell_count_label_object.place(x=0, y=0)
         Cell.randomize_mines()
         self.startmenu()
+        
