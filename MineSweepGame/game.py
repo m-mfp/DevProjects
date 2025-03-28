@@ -10,6 +10,7 @@ class Game:
         self.left_frame = left_frame
         self.center_frame = center_frame
         self.first_game = True
+        Cell.restart_callback = self.start_game
 
         self.difficulties = (
             ('EASY', 6),
@@ -58,6 +59,7 @@ class Game:
             widget.destroy()
 
         Cell.all = []
+        Cell.cell_count = settings.CELL_COUNT
         settings.GRID_SIZE = int(self.selected_difficulty.get())
         settings.CELL_COUNT = settings.GRID_SIZE ** 2
         settings.MINES_COUNT = settings.CELL_COUNT // 4

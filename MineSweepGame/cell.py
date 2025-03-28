@@ -20,7 +20,8 @@ class Cell:
     def create_btn_object(self, location):
         btn = Button(
             location,
-            bg = 'ivory'
+            bg = 'ivory',
+            activebackground='#d3d3d3'
         )
 
         btn.bind('<Button-1>', self.left_click_actions)
@@ -47,12 +48,12 @@ class Cell:
             self.show_mine()
         else:
             self.show_cell()
-
             if Cell.cell_count == settings.MINES_COUNT:
                 messagebox.showinfo("Game Over", "You Won!")
 
-        self.cell_btn_object.unbind('<Button-1>')
-        self.cell_btn_object.unbind('<Button-3>')
+        if self.cell_btn_object and self.cell_btn_object.winfo_exists():
+            self.cell_btn_object.unbind('<Button-1>')
+            self.cell_btn_object.unbind('<Button-3>')
 
     def get_cell_by_axis(self, x, y):
         for cell in Cell.all:
@@ -113,17 +114,21 @@ class Cell:
     def right_click_actions(self, event):
         if not self.is_mine_candidate:
             self.cell_btn_object.configure(
-                bg='orange'
+                bg='orange',
+                activebackground='orange'
             )
             self.is_mine_candidate = True
         else:
             self.cell_btn_object.configure(
-                bg='ivory'
+                bg='ivory',
+                activebackground='#d3d3d3'
             )
             self.is_mine_candidate = False
 
-    def restart_game(self):
-        pass
+    @staticmethod
+    def restart_game():
+        if Cell.restart_callback:
+            Cell.restart_callback()
 
     @staticmethod
     def randomize_mines():
