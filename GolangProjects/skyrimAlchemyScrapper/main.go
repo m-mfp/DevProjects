@@ -19,26 +19,35 @@ func main() {
 		}
 	}
 
+	var arg string
+
 	if len(os.Args) < 2 {
 		log.Fatal("Please provide an ingredient name or effect as a command-line argument.")
+	} else {
+		if arg == "-p" || arg == "-potion" {
+			fmt.Println("Creating potion...")
+			arg = strings.ToLower(os.Args[2])
+		} else {
+			arg = strings.ToLower(os.Args[1])
+		}
 	}
-
-	arg := os.Args[1]
-	arg = strings.ToLower(arg)
 
 	effects, err := getEffects(arg)
 	if err != nil {
 		log.Fatalf("Error with getEffects: %v", err)
 	} else if effects != nil {
-		fmt.Println("Effects:", effects)
+		fmt.Printf("Effects for %s:\n", arg)
+		for _, effect := range effects {
+			fmt.Printf("- %s\n", effect)
+		}
+
 		combinations, err := getCombinations(effects)
 		if err != nil {
 			log.Fatalf("Error with getCombinations: %v", err)
 		}
-		fmt.Println("Combinations:")
+		fmt.Println("\nCombinations:")
 		for effect, ingredients := range combinations {
-			fmt.Println("")
-			fmt.Printf("-%s:\n", effect)
+			fmt.Printf("\n-%s:\n", effect)
 			for _, ingredient := range ingredients {
 				fmt.Printf("-- %s\n", ingredient)
 			}
@@ -49,7 +58,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error with getIngredients: %v", err)
 	} else if ingredients != nil {
-		fmt.Println("Ingredients:")
+		fmt.Printf("Ingredients for %s:\n", arg)
 		for _, ingredient := range ingredients {
 			fmt.Printf("- %s\n", ingredient)
 		}
