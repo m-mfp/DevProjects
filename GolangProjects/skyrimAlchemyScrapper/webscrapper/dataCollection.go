@@ -1,13 +1,27 @@
 package webscrapper
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gocolly/colly"
 )
 
-func DataCollection(c *colly.Collector, url string) ([]Ingredient, error) {
+const CSVFileName = "ingredients.csv"
+
+type Ingredient struct {
+	Title   string
+	Effects []string
+}
+
+var csvHeaders = []string{"Ingredient", "Effect One", "Effect Two", "Effect Three", "Effect Four"}
+
+func DataCollection() error {
+	url := "https://elderscrolls.fandom.com/wiki/Ingredients_(Skyrim)"
+	c := colly.NewCollector()
+
 	var ingredients []Ingredient
 
 	c.OnRequest(func(r *colly.Request) {
@@ -39,8 +53,41 @@ func DataCollection(c *colly.Collector, url string) ([]Ingredient, error) {
 	})
 
 	if err := c.Visit(url); err != nil {
-		return nil, fmt.Errorf("error visiting the URL: %w", err)
+		return fmt.Errorf("error visiting the URL: %w", err)
 	}
 
-	return ingredients, nil
+	err := WriteCSV(ingredients)
+	if err != nil {
+		return fmt.Errorf("error writing record to CSV: %w", err)
+	}
+	return nil
+}
+
+func WriteCSV(ingredients []Ingredient) error {
+	file, err := os.Create(CSVFileName)
+	if err != nil {
+		return fmt.Errorf("error creating CSV file: %w", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	if err := writer.Write(csvHeaders); err != nil {
+		return fmt.Errorf("error writing header to CSV: %w", err)
+	}
+
+	for _, ingredient := range ingredients {
+		record := []string{ingredient.Title}
+		record = append(record, ingredient.Effects...)
+
+		for len(record) < len(csvHeaders) {
+			record = append(record, "")
+		}
+
+		if err := writer.Write(record); err != nil {
+			return fmt.Errorf("error writing record to CSV: %w", err)
+		}
+	}
+	return nil
 }
