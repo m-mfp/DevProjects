@@ -91,3 +91,13 @@ func WriteCSV(ingredients []Ingredient) error {
 	}
 	return nil
 }
+
+func ReadCSV() (*csv.Reader, *os.File, error) {
+	file, err := os.Open(CSVFileName)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error opening CSV file: %w", err)
+	}
+
+	reader := csv.NewReader(file)
+	return reader, file, nil
+}
