@@ -50,7 +50,7 @@ func main() {
 	router.POST("/albums", postAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 
-	router.Run("localhost:123")
+	router.Run("localhost:12300")
 }
 
 // request with: Invoke-WebRequest -Uri https://localhost:123/albums/id
