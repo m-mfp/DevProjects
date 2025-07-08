@@ -60,21 +60,28 @@ function displayNPC(npc) {
                     listItems[2].lastChild.innerText = `${npc.companion ? 'Yes' : 'No'}`;
                     listItems[3].lastChild.innerText = `${npc.merchant ? 'Yes' : 'No'}`;
                     listItems[4].lastChild.innerText = `${npc.doctor ? 'Yes' : 'No'}`;
-                } else if (info.nodeName == "IMG" && npc.photo) {
 
-                    const lastPngIndex = npc.photo.lastIndexOf(".png");
-                    const lastJpgIndex = npc.photo.lastIndexOf(".jpg");
+                } else if (info.nodeName == "IMG") {
+                    info.src = "https://cdn.dribbble.com/userupload/22076800/file/original-8e7ce77dec0edaf0105e8287038f6e60.gif"
 
-                    let lastIndex = Math.max(lastPngIndex, lastJpgIndex);
+                    if (npc.photo) {
+                        const lastPngIndex = npc.photo.lastIndexOf(".png");
+                        const lastJpgIndex = npc.photo.lastIndexOf(".jpg");
 
-                    if (lastIndex !== -1) {
-                        npc.photo = npc.photo.slice(0, lastIndex + (lastIndex === lastPngIndex ? 4 : 4));
+                        let lastIndex = Math.max(lastPngIndex, lastJpgIndex);
+
+                        if (lastIndex !== -1) {
+                            npc.photo = npc.photo.slice(0, lastIndex + (lastIndex === lastPngIndex ? 4 : 4));
+                        }
+
+                        setTimeout(() => {
+                            info.src = npc.photo
+                        }, 500)
                     }
 
-                    info.src = npc.photo
+
                 }
             }
         }
-        
     }
 }
