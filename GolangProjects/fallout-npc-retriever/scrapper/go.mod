@@ -3,13 +3,14 @@ module fallout-npc-scrapper/api
 go 1.24.4
 
 require (
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.10.1
 	github.com/gocolly/colly v1.2.0
+	golang.org/x/time v0.12.0
 )
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.3 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/htmlquery v1.3.4 // indirect
 	github.com/antchfx/xmlquery v1.4.4 // indirect

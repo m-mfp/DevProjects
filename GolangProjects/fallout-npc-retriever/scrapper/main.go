@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
+	"golang.org/x/time/rate"
 )
 
 const URL = "https://fallout.fandom.com/"
@@ -32,6 +35,11 @@ func npcScrapper(g *gin.Context) {
 
 	name := g.Param("name")
 
+	if err := validateName(name); err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var foundChar *npc
 	c := colly.NewCollector()
 
@@ -40,7 +48,7 @@ func npcScrapper(g *gin.Context) {
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println("Got a response from", r.Request.URL.String())
+		// fmt.Println("Got a response from", r.Request.URL.String())
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
@@ -84,7 +92,6 @@ func npcScrapper(g *gin.Context) {
 				el.DOM.Find("div#toc").Each(func(i int, tocEl *goquery.Selection) {
 					if tocEl.Prev().Length() > 0 && tocEl.Prev().Get(0).Data == "p" {
 						npcBrief = tocEl.Prev().Text()
-						fmt.Println(npcBrief)
 					}
 				})
 
@@ -109,7 +116,41 @@ func npcScrapper(g *gin.Context) {
 	}
 }
 
+func validateName(name string) error {
+	if strings.TrimSpace(name) == "" {
+		return fmt.Errorf("name cannot be empty")
+	}
+
+	if len(name) > 25 {
+		return fmt.Errorf("name cannot exceed 25 characters")
+	}
+
+	validNamePattern := `^[a-zA-Z\s'-]+$`
+	matched, err := regexp.MatchString(validNamePattern, name)
+	if err != nil || !matched {
+		return fmt.Errorf("name contains invalid characters")
+	}
+
+	return nil
+}
+
+func RateLimiter() gin.HandlerFunc {
+	limiter := rate.NewLimiter(1, 4)
+	return func(c *gin.Context) {
+
+		if limiter.Allow() {
+			c.Next()
+		} else {
+			c.JSON(http.StatusTooManyRequests, gin.H{
+				"message": "Limite exceed",
+			})
+		}
+
+	}
+}
+
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	config := cors.Config{
@@ -117,10 +158,12 @@ func main() {
 		AllowMethods:     []string{"GET", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
+		AllowCredentials: false,
 		MaxAge:           12 * time.Hour,
 	}
 	router.Use(cors.New(config))
+
+	router.Use(RateLimiter())
 
 	router.ForwardedByClientIP = true
 	router.GET("/fallout-npc-scrapper/:name", npcScrapper)
