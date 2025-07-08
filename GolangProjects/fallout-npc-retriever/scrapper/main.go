@@ -11,7 +11,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-const URL = "https://fallout.fandom.com/wiki/Fallout_4_characters"
+const URL = "https://fallout.fandom.com/"
 
 type npc struct {
 	Name      string `json:"name"`
@@ -20,6 +20,7 @@ type npc struct {
 	Merchant  bool   `json:"merchant"`
 	Companion bool   `json:"companion"`
 	Essential bool   `json:"essential"`
+	Photo     string `json:"photo"`
 }
 
 func npcScrapper(g *gin.Context) {
@@ -33,23 +34,26 @@ func npcScrapper(g *gin.Context) {
 	c := colly.NewCollector()
 
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
+		// fmt.Println("Visiting", r.URL.String())
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println("Got a response from", r.Request.URL)
+		// fmt.Println("Got a response from", r.Request.URL.String())
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
-		log.Printf("Error occurred while visiting %s: %v\n", r.Request.URL, err)
+		log.Printf("Error occurred while visiting %s: %v\n", r.Request.URL.String(), err)
+		g.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch data"})
 	})
 
 	c.OnHTML(".mw-content-ltr.mw-parser-output", func(div *colly.HTMLElement) {
+		var npcURL string
 		div.ForEach("table", func(i int, table *colly.HTMLElement) {
 			if i > 6 && i < 87 {
 				table.ForEach("tbody tr", func(i int, tr *colly.HTMLElement) {
 					if tr.ChildText("td:nth-child(1)") == name {
-						fmt.Println("We found", name)
+						npcURL = tr.ChildAttr("td:nth-child(1) a", "href")
+
 						foundChar = &npc{
 							Name:      tr.ChildText("td:nth-child(1)"),
 							Essential: tr.DOM.Find("td:nth-child(5) span").Length() == 3,
@@ -58,17 +62,30 @@ func npcScrapper(g *gin.Context) {
 							Companion: tr.DOM.Find("td:nth-child(8) span").Length() == 3,
 							Location:  tr.ChildText("td:nth-child(11)"),
 						}
-
-						g.IndentedJSON(http.StatusOK, foundChar)
-						return
 					}
 
 				})
 			}
 		})
+
+		// npc url
+		if npcURL != "" {
+			npcCollector := colly.NewCollector()
+			npcCollector.OnHTML(".mw-content-ltr.mw-parser-output", func(figure *colly.HTMLElement) {
+				npcPhoto := figure.ChildAttr("figure img", "src")
+
+				if npcPhoto != "" {
+					foundChar.Photo = npcPhoto
+				}
+			})
+			npcCollector.Visit(URL + npcURL)
+		} else {
+			g.IndentedJSON(http.StatusNotFound, gin.H{"error": "NPC not found"})
+		}
+		g.JSON(http.StatusOK, foundChar)
 	})
 
-	err := c.Visit(URL)
+	err := c.Visit(URL + "wiki/Fallout_4_characters")
 	if err != nil {
 		log.Fatal(err)
 		g.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to visit URL"})

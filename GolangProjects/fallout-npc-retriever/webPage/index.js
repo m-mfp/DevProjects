@@ -34,7 +34,6 @@ async function getData(npcName) {
     });
 
     if (!response.ok) {
-        // Handle errors
         console.error('Network response was not ok:', response.statusText);
         return;
     }
@@ -57,9 +56,18 @@ function displayNPC(npc) {
                     listItems[2].lastChild.innerText = `${npc.companion ? 'Yes' : 'No'}`;
                     listItems[3].lastChild.innerText = `${npc.merchant ? 'Yes' : 'No'}`;
                     listItems[4].lastChild.innerText = `${npc.doctor ? 'Yes' : 'No'}`;
-                } else if (info.nodeName == "IMG") {
-                    console.log(info)
-                    info.src = 'https://static.wikia.nocookie.net/fallout/images/5/58/FO4_PrestonGarvey_Infobox.png'
+                } else if (info.nodeName == "IMG" && npc.photo) {
+
+                    const lastPngIndex = npc.photo.lastIndexOf(".png");
+                    const lastJpgIndex = npc.photo.lastIndexOf(".jpg");
+
+                    let lastIndex = Math.max(lastPngIndex, lastJpgIndex);
+
+                    if (lastIndex !== -1) {
+                        npc.photo = npc.photo.slice(0, lastIndex + (lastIndex === lastPngIndex ? 4 : 4));
+                    }
+
+                    info.src = npc.photo
                 }
             }
         }

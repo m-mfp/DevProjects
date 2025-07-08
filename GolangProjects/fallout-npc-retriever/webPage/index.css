@@ -92,6 +92,7 @@ input[type="submit"]:hover {
 
 #npc-main-info img {
     width: 250px;
+    object-fit: cover;
 }
 
 #npc-main-info {
