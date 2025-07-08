@@ -47,6 +47,10 @@ function displayNPC(npc) {
     for (let child of result.children) {
         if (child.nodeName == "H2") {
             child.innerText = npc.name
+        } else if (child.id == "npc-descriptors") {
+                child.innerHTML = `
+                    <p>${npc.brief}</p>
+                `
         } else {
             for (let info of child.children) {
                 if (info.nodeName == "UL") {

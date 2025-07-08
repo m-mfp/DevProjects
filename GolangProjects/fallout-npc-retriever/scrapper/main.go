@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
@@ -21,6 +22,7 @@ type npc struct {
 	Companion bool   `json:"companion"`
 	Essential bool   `json:"essential"`
 	Photo     string `json:"photo"`
+	Brief     string `json:"brief"`
 }
 
 func npcScrapper(g *gin.Context) {
@@ -38,7 +40,7 @@ func npcScrapper(g *gin.Context) {
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		// fmt.Println("Got a response from", r.Request.URL.String())
+		fmt.Println("Got a response from", r.Request.URL.String())
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
@@ -71,13 +73,27 @@ func npcScrapper(g *gin.Context) {
 		// npc url
 		if npcURL != "" {
 			npcCollector := colly.NewCollector()
-			npcCollector.OnHTML(".mw-content-ltr.mw-parser-output", func(figure *colly.HTMLElement) {
-				npcPhoto := figure.ChildAttr("figure img", "src")
+			npcCollector.OnHTML(".mw-content-ltr.mw-parser-output", func(el *colly.HTMLElement) {
+				npcPhoto := el.ChildAttr("figure img", "src")
 
 				if npcPhoto != "" {
 					foundChar.Photo = npcPhoto
 				}
+
+				var npcBrief string
+				el.DOM.Find("div#toc").Each(func(i int, tocEl *goquery.Selection) {
+					if tocEl.Prev().Length() > 0 && tocEl.Prev().Get(0).Data == "p" {
+						npcBrief = tocEl.Prev().Text()
+						fmt.Println(npcBrief)
+					}
+				})
+
+				if npcBrief != "" {
+					foundChar.Brief = npcBrief
+				}
+
 			})
+
 			npcCollector.Visit(URL + npcURL)
 		} else {
 			g.IndentedJSON(http.StatusNotFound, gin.H{"error": "NPC not found"})
