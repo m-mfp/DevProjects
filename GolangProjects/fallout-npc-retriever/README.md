@@ -15,6 +15,7 @@ The Fallout NPC Retriever is a web application that functions as both a web scra
 
 ## Directory Structure
 
+```
 fallout-npc-retriever/
 ├── README.md
 ├── scrapper/
@@ -25,7 +26,7 @@ fallout-npc-retriever/
 ├── index.html
 ├── index.css
 └── index.js
-
+```
 
 ### `scrapper/`
 
