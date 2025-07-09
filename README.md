@@ -4,11 +4,11 @@
 
 This repository contains a collection of my development projects, organized into two main directories: one for Go (Golang) projects and another for Python projects. Each project serves as a practical application of the skills and concepts I have learned in programming.
 
-### `golang-projects/`
+### `GolangProjects/`
 
 This directory contains various projects developed in Go.
 
-### `python-projects/`
+### `PythonProjects/`
 
 This directory contains various projects developed in Python.
 
